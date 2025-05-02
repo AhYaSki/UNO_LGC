@@ -14,23 +14,23 @@ import javax.swing.Timer;
 
 public class Page1 {
     private static final Color ORANGE_COLOR = new Color(255, 102, 0);
-    
+
+    // Constructor: Initializes the welcome screen with animated logo and start prompt
     public Page1() {
-        // Initialize main frame with background image
-        Uframe frame = new Uframe("UNO GAME", 800, 600, "PAGE 1.1.png");
+        Uframe frame = new Uframe("UNO GAME", 800, 600, "assets/PAGE 1.1.png");
         frame.setExtendedState(Uframe.MAXIMIZED_BOTH);
 
         PanelGBLayout panel = frame.getMainPanel();
         panel.setLayout(null);
 
-        // UNO logo setup
+        // Setup UNO logo
         int logoWidth = 500;
         int logoHeight = 370;
-        ImageIcon unoIcon = panel.resizeIcon("UNO LOGO (STARTUP).png", logoWidth, logoHeight);
+        ImageIcon unoIcon = panel.resizeIcon("assets/UNO LOGO (STARTUP).png", logoWidth, logoHeight);
         ULabel unoLogo = new ULabel(unoIcon);
         panel.add(unoLogo);
 
-        // Press to start label setup
+        // Setup animated label text
         Font font = new Font("MV Boli", Font.ITALIC, 50);
         ULabel label = new ULabel("PRESS 'ENTER' TO START...", SwingConstants.CENTER);
         label.setFont(font);
@@ -39,7 +39,7 @@ public class Page1 {
         label.setSize(700, 60);
         panel.add(label);
 
-        // Animation variables
+        // Animation state variables
         final int[] yOffsetLogo = {0};
         final int[] logoDir = {1};
         final int bounceRange = 15;
@@ -47,34 +47,30 @@ public class Page1 {
         final int[] glowDir = {1};
         final float maxGlow = 0.8f;
 
-        // Position update function
+        // Position update: centers and animates logo and label
         Runnable updatePositions = () -> {
             int pw = panel.getWidth();
             int ph = panel.getHeight();
 
-            // Center logo with bounce effect
             int logoX = (pw - logoWidth) / 2;
             int logoY = (ph - logoHeight) / 2 + yOffsetLogo[0];
             unoLogo.setBounds(logoX, logoY, logoWidth, logoHeight);
 
-            // Position label at bottom with glow effect
             int textX = (pw - label.getWidth()) / 2;
             int textY = ph - 100;
             label.setLocation(textX, textY);
-            
-            // Update glow effect
+
             float glow = glowIntensity[0];
             label.setTextColor(new Color(
                 ORANGE_COLOR.getRed(),
                 ORANGE_COLOR.getGreen(),
                 ORANGE_COLOR.getBlue(),
-                (int)(255 * (0.5f + glow/2))
+                (int)(255 * (0.5f + glow / 2))
             ));
         };
-
         updatePositions.run();
 
-        // Window resize listener
+        // Recenter elements on window resize
         frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -82,15 +78,13 @@ public class Page1 {
             }
         });
 
-        // Animation timer
+        // Animation timer: handles logo bounce and label glow
         Timer timer = new Timer(50, e -> {
-            // Logo bounce animation
             yOffsetLogo[0] += logoDir[0];
             if (yOffsetLogo[0] > bounceRange || yOffsetLogo[0] < -bounceRange) {
                 logoDir[0] *= -1;
             }
 
-            // Text glow animation
             glowIntensity[0] += glowDir[0] * 0.05f;
             if (glowIntensity[0] > maxGlow || glowIntensity[0] < 0) {
                 glowDir[0] *= -1;
@@ -99,20 +93,19 @@ public class Page1 {
             updatePositions.run();
         });
         timer.start();
-        
-        // Keyboard listener for start action
+
+        // Start game when user presses Enter
         frame.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     timer.stop();
-                    Page2 mypg2=new Page2();
+                    new Page2();
                     frame.dispose();
-                    // Add game start logic here
                 }
             }
         });
-        
+
         frame.setFocusable(true);
         frame.requestFocusInWindow();
     }
